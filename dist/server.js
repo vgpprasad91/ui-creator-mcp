@@ -354,7 +354,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 $schema: "ui-creator-manifest/v1",
                 $version: 1,
                 app: appId, // MUST be a string — runtime uses manifest.app as the KV key prefix
-                load: { eager: [], lazy: [], routes: [] },
+                load: {
+                    eager: [
+                        { file: "theme", ttl: 3600, priority: 1 },
+                        { file: "navigation", ttl: 3600, priority: 2 },
+                    ],
+                    lazy: [],
+                    routes: []
+                },
                 merge_strategy: {},
             };
             await kvPut(`config:${appId}:manifest`, JSON.stringify(manifest));

@@ -400,7 +400,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         $schema: "ui-creator-manifest/v1",
         $version: 1,
         app: appId,  // MUST be a string — runtime uses manifest.app as the KV key prefix
-        load: { eager: [] as any[], lazy: [] as any[], routes: [] as any[] },
+        load: {
+          eager: [
+            { file: "theme", ttl: 3600, priority: 1 },
+            { file: "navigation", ttl: 3600, priority: 2 },
+          ] as any[],
+          lazy: [] as any[],
+          routes: [] as any[]
+        },
         merge_strategy: {},
       };
 
