@@ -140,26 +140,44 @@ Tabs is one of the most commonly misconfigured components. Use this exact struct
 
 **CRITICAL:** Tab body content goes in `children`, NOT `content`. Using `content` instead of `children` will cause the tab to render empty. Each tab MUST have `value` (string) and `label` (string).
 
-### Grid Structure
+### Grid Structure — MANDATORY for all multi-column layouts
 
-`cols` must be a number or a breakpoint object. NEVER use a string.
+**CRITICAL RULE: NEVER use raw `div` elements to create multi-column layouts, grids, calendars, schedules, or any side-by-side arrangement. ALWAYS use the `Grid` component.** Raw divs stack vertically and produce ugly single-column layouts.
+
+`cols` must be a number. `gap` must be a number.
 
 ```json
 {
   "type": "Grid",
-  "props": {
-    "cols": 4,
-    "gap": 4
-  }
+  "props": { "cols": 4, "gap": 4 },
+  "children": [ ... ]
 }
 ```
 
-Responsive breakpoints:
+**Examples of when to use Grid:**
+- Stat cards row → `Grid` with `cols: 4`
+- Weekly calendar → `Grid` with `cols: 8` (time column + 7 days)
+- Photo gallery → `Grid` with `cols: 3`
+- Pricing cards → `Grid` with `cols: 3`
+- Two-column layout → `Grid` with `cols: 2`
+- Dashboard widgets → `Grid` with `cols: 3`
+- Any tabular or schedule data → `Grid`
+
+**NEVER do this** (results in ugly vertical stacking):
 ```json
-{ "cols": { "default": 1, "sm": 2, "md": 3, "lg": 4 }, "gap": 6 }
+{ "type": "div", "children": [
+  { "type": "div", "children": [...] },
+  { "type": "div", "children": [...] }
+]}
 ```
 
-`gap` must be a number (Tailwind spacing scale: 1, 2, 3, 4, 6, 8, etc.).
+**ALWAYS do this** instead:
+```json
+{ "type": "Grid", "props": { "cols": 2, "gap": 4 }, "children": [
+  { "type": "Card", ... },
+  { "type": "Card", ... }
+]}
+```
 
 ### StatCard Structure
 

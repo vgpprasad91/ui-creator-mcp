@@ -324,6 +324,15 @@ function validatePageConfig(pageConfig: unknown): ValidationResult {
                   errors.push(`${nodePath}: Icon MUST have props.name as a string.`);
                 }
               }
+
+              // Detect raw div used as layout container (should be Grid)
+              if (type === "div" && Array.isArray(n.children) && (n.children as unknown[]).length >= 3) {
+                const kids = n.children as any[];
+                const allCards = kids.every((k: any) => k && typeof k === "object" && (k.type === "Card" || k.type === "card" || k.type === "StatCard" || k.type === "stat_card" || k.type === "div"));
+                if (allCards && kids.length >= 3) {
+                  errors.push(`${nodePath}: Use "Grid" instead of "div" for multi-item layouts (${kids.length} children). Raw divs stack vertically. Change type to "Grid" and add props.cols.`);
+                }
+              }
             }
 
             // Recurse into children and body
