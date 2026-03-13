@@ -1,0 +1,37 @@
+{
+  "name": "ui-creator-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for building apps through chat — zero code, zero deploy. Chat with Claude to create full SaaS UIs from a component manifest.",
+  "type": "module",
+  "bin": {
+    "ui-creator-mcp": "./dist/server.js"
+  },
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/server.js"
+  },
+  "files": [
+    "dist/",
+    "CLAUDE.md",
+    "manifest/components.schema.json"
+  ],
+  "keywords": [
+    "mcp",
+    "claude",
+    "ui",
+    "no-code",
+    "config-driven",
+    "cloudflare",
+    "shadcn"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.5.0"
+  }
+}

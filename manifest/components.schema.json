@@ -1,0 +1,1501 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "UI Creator Component Manifest",
+  "description": "Machine-readable registry of all available components, their props, plugins, and page templates for the zero-deploy config-driven platform.",
+  "version": "1.0.0",
+  "generated": "2026-03-13",
+  "stats": {
+    "totalComponents": 88,
+    "coreComponents": 48,
+    "pluginComponents": 40,
+    "plugins": 5,
+    "templates": 16,
+    "categories": ["layout", "form", "feedback", "navigation", "data-display", "overlay", "chart", "ai", "animation", "media", "productivity"]
+  },
+  "plugins": {
+    "core": {
+      "description": "Built into the client bundle, always available",
+      "bundle": "/assets/client.js",
+      "componentCount": 48
+    },
+    "charts": {
+      "description": "SVG-based chart components (no external charting library)",
+      "bundle": "/assets/plugin-charts.js",
+      "componentCount": 9
+    },
+    "ai": {
+      "description": "AI/LLM UI components for chat, streaming, and feedback",
+      "bundle": "/assets/plugin-ai.js",
+      "componentCount": 7
+    },
+    "advanced": {
+      "description": "Complex form controls, data grids, diff viewer, command palette",
+      "bundle": "/assets/plugin-advanced.js",
+      "componentCount": 12
+    },
+    "magic": {
+      "description": "Animated marketing components (marquee, particles, gradients)",
+      "bundle": "/assets/plugin-magic.js",
+      "componentCount": 8
+    },
+    "media": {
+      "description": "Audio, video, image capture and playback components",
+      "bundle": "/assets/plugin-media.js",
+      "componentCount": 6
+    }
+  },
+  "components": [
+    {
+      "name": "Card",
+      "aliases": ["card"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Smart card wrapper that auto-renders title/description as CardHeader and children as CardContent",
+      "props": {
+        "title": { "type": "string", "required": false, "description": "Card title rendered inside CardHeader > CardTitle" },
+        "description": { "type": "string", "required": false, "description": "Card description rendered inside CardHeader > CardDescription" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Card body content rendered inside CardContent" }
+      },
+      "example": { "type": "Card", "title": "Revenue", "description": "Monthly stats", "children": [{ "type": "p", "text": "$45,231" }] }
+    },
+    {
+      "name": "CardHeader",
+      "aliases": [],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Card header section with flex column layout and padding",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Header content" }
+      }
+    },
+    {
+      "name": "CardTitle",
+      "aliases": [],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Card title rendered as h3 with semibold font",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Title text" }
+      }
+    },
+    {
+      "name": "CardDescription",
+      "aliases": [],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Card description paragraph in muted foreground color",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Description text" }
+      }
+    },
+    {
+      "name": "CardContent",
+      "aliases": [],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Card content area with padding",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Content body" }
+      }
+    },
+    {
+      "name": "CardFooter",
+      "aliases": [],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Card footer with flex row layout",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Footer content" }
+      }
+    },
+    {
+      "name": "Button",
+      "aliases": ["button"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Clickable button with multiple visual variants and sizes",
+      "props": {
+        "variant": { "type": "string", "required": false, "description": "Visual variant", "default": "default", "options": ["default", "destructive", "outline", "secondary", "ghost", "link"] },
+        "size": { "type": "string", "required": false, "description": "Button size", "default": "default", "options": ["default", "sm", "lg", "icon"] },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether button is disabled" },
+        "action": { "type": "string", "required": false, "description": "Action identifier dispatched on click" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Button label content" }
+      },
+      "example": { "type": "Button", "text": "Save", "variant": "default", "action": "save-form" }
+    },
+    {
+      "name": "OAuthButton",
+      "aliases": ["oauth_button"],
+      "plugin": "core",
+      "category": "form",
+      "description": "OAuth sign-in button with provider icon (Google/GitHub) and configurable action",
+      "props": {
+        "provider": { "type": "string", "required": false, "description": "OAuth provider name", "options": ["google", "github"] },
+        "text": { "type": "string", "required": false, "description": "Custom button label" },
+        "action": { "type": "string", "required": false, "description": "Custom action to dispatch" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Badge",
+      "aliases": ["badge"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Small status indicator badge with variant styling",
+      "props": {
+        "variant": { "type": "string", "required": false, "description": "Visual variant", "default": "default", "options": ["default", "secondary", "destructive", "outline"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Badge label text" }
+      },
+      "example": { "type": "Badge", "text": "Active", "variant": "default" }
+    },
+    {
+      "name": "Separator",
+      "aliases": ["separator"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Visual divider line, optionally with centered text label",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Optional text label in center" },
+        "orientation": { "type": "string", "required": false, "description": "Direction", "default": "horizontal", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Avatar",
+      "aliases": ["avatar"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Circular avatar showing image or name initials fallback",
+      "props": {
+        "src": { "type": "string", "required": false, "description": "Image URL" },
+        "name": { "type": "string", "required": false, "description": "User name for alt text and initials" },
+        "size": { "type": "string", "required": false, "description": "Avatar size", "default": "md", "options": ["sm", "md", "lg"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Skeleton",
+      "aliases": ["skeleton"],
+      "plugin": "core",
+      "category": "feedback",
+      "description": "Animated placeholder skeleton for loading states",
+      "props": {
+        "count": { "type": "number", "required": false, "description": "Number of skeleton blocks", "default": 1 },
+        "className": { "type": "string", "required": false, "description": "CSS classes controlling dimensions" }
+      }
+    },
+    {
+      "name": "Icon",
+      "aliases": ["icon"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "SVG icon renderer from built-in icon set",
+      "props": {
+        "name": { "type": "string", "required": true, "description": "Icon name", "options": ["layout-dashboard", "users", "folder-kanban", "receipt", "bar-chart-2", "settings", "activity", "indian-rupee", "folder-open", "log-out", "clock", "eye", "check-circle"] },
+        "className": { "type": "string", "required": false, "description": "CSS classes for sizing/color" }
+      }
+    },
+    {
+      "name": "Input",
+      "aliases": ["input"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Styled text input field",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text above the input" },
+        "inputType": { "type": "string", "required": false, "description": "HTML input type", "default": "text", "options": ["text", "email", "password", "number", "tel", "url", "search"] },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder text" },
+        "defaultValue": { "type": "string", "required": false, "description": "Default value" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "required": { "type": "boolean", "required": false, "description": "Whether required" },
+        "name": { "type": "string", "required": false, "description": "Input name attribute" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "Input", "label": "Email", "placeholder": "name@example.com", "inputType": "email" }
+    },
+    {
+      "name": "Textarea",
+      "aliases": ["textarea"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Multi-line text input",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder text" },
+        "rows": { "type": "number", "required": false, "description": "Visible text lines" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Label",
+      "aliases": ["label_component"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Styled form label element",
+      "props": {
+        "htmlFor": { "type": "string", "required": false, "description": "ID of associated form element" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Label text" }
+      }
+    },
+    {
+      "name": "Select",
+      "aliases": ["select_component"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Dropdown select input with configurable options",
+      "props": {
+        "options": { "type": "array", "required": false, "description": "Array of {value, label, disabled?} objects" },
+        "defaultValue": { "type": "string", "required": false, "description": "Default selected value" },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder text" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "Select", "options": [{ "value": "admin", "label": "Admin" }, { "value": "member", "label": "Member" }], "defaultValue": "member" }
+    },
+    {
+      "name": "Checkbox",
+      "aliases": ["checkbox"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Styled checkbox with optional label",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "defaultChecked": { "type": "boolean", "required": false, "description": "Default checked state" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Switch",
+      "aliases": ["switch_component"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Toggle switch for boolean on/off settings",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "defaultChecked": { "type": "boolean", "required": false, "description": "Default state" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "RadioGroup",
+      "aliases": ["radio_group"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Radio button group with configurable options",
+      "props": {
+        "options": { "type": "array", "required": false, "description": "Array of {value, label, description?, disabled?}" },
+        "defaultValue": { "type": "string", "required": false, "description": "Default selected value" },
+        "orientation": { "type": "string", "required": false, "description": "Layout direction", "default": "vertical", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Slider",
+      "aliases": ["slider"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Range slider input with optional label and value display",
+      "props": {
+        "defaultValue": { "type": "number", "required": false, "description": "Default value", "default": 0 },
+        "min": { "type": "number", "required": false, "description": "Minimum value", "default": 0 },
+        "max": { "type": "number", "required": false, "description": "Maximum value", "default": 100 },
+        "step": { "type": "number", "required": false, "description": "Step increment", "default": 1 },
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "showValue": { "type": "boolean", "required": false, "description": "Whether to show current value" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Toggle",
+      "aliases": ["toggle"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Pressable toggle button with on/off state",
+      "props": {
+        "defaultPressed": { "type": "boolean", "required": false, "description": "Default pressed state" },
+        "variant": { "type": "string", "required": false, "description": "Visual variant", "default": "default", "options": ["default", "outline"] },
+        "size": { "type": "string", "required": false, "description": "Toggle size", "default": "default", "options": ["default", "sm", "lg"] },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ToggleGroup",
+      "aliases": ["toggle_group"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Group of toggle buttons with single or multiple selection",
+      "props": {
+        "type": { "type": "string", "required": false, "description": "Selection mode", "default": "single", "options": ["single", "multiple"] },
+        "options": { "type": "array", "required": false, "description": "Array of {value, label, icon?, disabled?}" },
+        "defaultValue": { "type": "string", "required": false, "description": "Default selected value(s)" },
+        "variant": { "type": "string", "required": false, "description": "Visual variant", "default": "default", "options": ["default", "outline"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Form",
+      "aliases": ["form"],
+      "plugin": "core",
+      "category": "form",
+      "description": "Config-driven form renderer that fetches field definitions from API",
+      "props": {
+        "schema": { "type": "string", "required": false, "description": "Form schema identifier (e.g. 'auth/email_login')" },
+        "children": { "type": "ReactNode", "required": false, "description": "Child elements" }
+      }
+    },
+    {
+      "name": "Grid",
+      "aliases": ["grid"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "CSS Grid layout container with responsive column support",
+      "props": {
+        "cols": { "type": "number|object", "required": false, "description": "Column count or responsive object {default, sm, md, lg, xl}", "default": 1 },
+        "gap": { "type": "number", "required": false, "description": "Gap size (Tailwind gap-N)", "default": 4 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" },
+        "children": { "type": "ReactNode", "required": false, "description": "Grid items" }
+      },
+      "example": { "type": "Grid", "cols": { "default": 1, "md": 2, "lg": 4 }, "gap": 4, "children": [] }
+    },
+    {
+      "name": "ScrollArea",
+      "aliases": ["scroll_area"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Scrollable container with configurable orientation and max height",
+      "props": {
+        "orientation": { "type": "string", "required": false, "description": "Scroll direction", "default": "vertical", "options": ["vertical", "horizontal", "both"] },
+        "maxHeight": { "type": "string", "required": false, "description": "Maximum height CSS value", "default": "300px" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AspectRatio",
+      "aliases": ["aspect_ratio"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Container that maintains a fixed aspect ratio",
+      "props": {
+        "ratio": { "type": "number", "required": false, "description": "Aspect ratio as width/height", "default": 1.7778 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ResizablePanelGroup",
+      "aliases": ["resizable_panel_group"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Container for resizable panels",
+      "props": {
+        "direction": { "type": "string", "required": false, "description": "Layout direction", "default": "horizontal", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ResizablePanel",
+      "aliases": ["resizable_panel"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Individual resizable panel",
+      "props": {
+        "defaultSize": { "type": "number", "required": false, "description": "Default flex size", "default": 50 },
+        "minSize": { "type": "number", "required": false, "description": "Minimum size as percentage" },
+        "maxSize": { "type": "number", "required": false, "description": "Maximum size as percentage" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ResizableHandle",
+      "aliases": ["resizable_handle"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Drag handle between resizable panels",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Collapsible",
+      "aliases": ["collapsible"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Expandable/collapsible container with trigger",
+      "props": {
+        "defaultOpen": { "type": "boolean", "required": false, "description": "Default open state", "default": false },
+        "trigger": { "type": "ReactNode", "required": false, "description": "Clickable trigger element" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "PageHeader",
+      "aliases": ["page_header"],
+      "plugin": "core",
+      "category": "layout",
+      "description": "Page-level header with large title and description",
+      "props": {
+        "title": { "type": "string", "required": false, "description": "Page title" },
+        "description": { "type": "string", "required": false, "description": "Subtitle text" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Dialog",
+      "aliases": ["dialog"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Modal dialog overlay with backdrop",
+      "props": {
+        "defaultOpen": { "type": "boolean", "required": false, "description": "Default open state", "default": false },
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that opens dialog" },
+        "title": { "type": "string", "required": false, "description": "Dialog title" },
+        "description": { "type": "string", "required": false, "description": "Dialog description" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Sheet",
+      "aliases": ["sheet"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Slide-in panel from any screen edge",
+      "props": {
+        "side": { "type": "string", "required": false, "description": "Slide-in side", "default": "right", "options": ["top", "right", "bottom", "left"] },
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that opens sheet" },
+        "title": { "type": "string", "required": false, "description": "Sheet title" },
+        "description": { "type": "string", "required": false, "description": "Sheet description" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AlertDialog",
+      "aliases": ["alert_dialog"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Confirmation dialog with Cancel and Action buttons",
+      "props": {
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that opens dialog" },
+        "title": { "type": "string", "required": false, "description": "Dialog title" },
+        "description": { "type": "string", "required": false, "description": "Dialog description" },
+        "cancelLabel": { "type": "string", "required": false, "description": "Cancel button text", "default": "Cancel" },
+        "actionLabel": { "type": "string", "required": false, "description": "Action button text", "default": "Continue" },
+        "variant": { "type": "string", "required": false, "description": "Action button variant", "default": "default", "options": ["default", "destructive"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Drawer",
+      "aliases": ["drawer"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Bottom sheet drawer with drag handle",
+      "props": {
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that opens drawer" },
+        "title": { "type": "string", "required": false, "description": "Drawer title" },
+        "description": { "type": "string", "required": false, "description": "Drawer description" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Popover",
+      "aliases": ["popover"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Floating popover panel anchored to trigger",
+      "props": {
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that toggles popover" },
+        "side": { "type": "string", "required": false, "description": "Side to show", "default": "bottom", "options": ["top", "right", "bottom", "left"] },
+        "align": { "type": "string", "required": false, "description": "Alignment", "default": "center", "options": ["start", "center", "end"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "HoverCard",
+      "aliases": ["hover_card"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Card that appears on hover",
+      "props": {
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that shows card on hover" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Tooltip",
+      "aliases": ["tooltip"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Small text popup on hover",
+      "props": {
+        "content": { "type": "string", "required": false, "description": "Tooltip text" },
+        "side": { "type": "string", "required": false, "description": "Side to show", "default": "top", "options": ["top", "right", "bottom", "left"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DropdownMenu",
+      "aliases": ["dropdown_menu"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Click-to-open dropdown menu with configurable items",
+      "props": {
+        "trigger": { "type": "ReactNode", "required": false, "description": "Element that toggles menu" },
+        "items": { "type": "array", "required": false, "description": "Array of {label, icon?, href?, disabled?, variant?, separator?, action?}" },
+        "align": { "type": "string", "required": false, "description": "Horizontal alignment", "default": "end", "options": ["start", "center", "end"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ContextMenu",
+      "aliases": ["context_menu"],
+      "plugin": "core",
+      "category": "overlay",
+      "description": "Right-click context menu with shortcut display",
+      "props": {
+        "items": { "type": "array", "required": false, "description": "Array of {label, shortcut?, disabled?, separator?, variant?}" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Alert",
+      "aliases": ["alert"],
+      "plugin": "core",
+      "category": "feedback",
+      "description": "Alert banner with variant styling",
+      "props": {
+        "variant": { "type": "string", "required": false, "description": "Visual variant", "default": "default", "options": ["default", "destructive", "warning", "success"] },
+        "title": { "type": "string", "required": false, "description": "Alert title" },
+        "description": { "type": "string", "required": false, "description": "Alert description" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "Alert", "variant": "success", "title": "Saved", "description": "Changes saved successfully." }
+    },
+    {
+      "name": "Progress",
+      "aliases": ["progress"],
+      "plugin": "core",
+      "category": "feedback",
+      "description": "Progress bar with optional label and percentage",
+      "props": {
+        "value": { "type": "number", "required": false, "description": "Current progress", "default": 0 },
+        "max": { "type": "number", "required": false, "description": "Maximum value", "default": 100 },
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "showValue": { "type": "boolean", "required": false, "description": "Show percentage" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Tabs",
+      "aliases": ["tabs"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Tab bar with underline-style active indicator. Each tab's children are rendered as page content.",
+      "props": {
+        "defaultValue": { "type": "string", "required": false, "description": "Initially active tab value" },
+        "tabs": { "type": "array", "required": false, "description": "Array of {value, label, children: [...]} tab definitions" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "Tabs", "defaultValue": "tab1", "tabs": [{ "value": "tab1", "label": "General", "children": [] }, { "value": "tab2", "label": "Advanced", "children": [] }] }
+    },
+    {
+      "name": "ShadcnTabs",
+      "aliases": ["shadcn_tabs"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Shadcn-styled tabs with pill indicator and vertical support",
+      "props": {
+        "defaultValue": { "type": "string", "required": false, "description": "Initially active tab" },
+        "tabs": { "type": "array", "required": false, "description": "Array of {value, label, icon?, disabled?}" },
+        "orientation": { "type": "string", "required": false, "description": "Layout", "default": "horizontal", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Accordion",
+      "aliases": ["accordion"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Expandable accordion with single or multiple open items",
+      "props": {
+        "type": { "type": "string", "required": false, "description": "Mode", "default": "single", "options": ["single", "multiple"] },
+        "items": { "type": "array", "required": false, "description": "Array of {value, title, content?}" },
+        "defaultValue": { "type": "string", "required": false, "description": "Initially open item(s)" },
+        "collapsible": { "type": "boolean", "required": false, "description": "Allow full collapse in single mode", "default": true },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Breadcrumb",
+      "aliases": ["breadcrumb"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Breadcrumb navigation trail",
+      "props": {
+        "items": { "type": "array", "required": false, "description": "Array of {label, href?, current?}" },
+        "separator": { "type": "string", "required": false, "description": "Separator character", "default": "/" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Pagination",
+      "aliases": ["pagination"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Pagination with previous/next and page numbers",
+      "props": {
+        "currentPage": { "type": "number", "required": false, "description": "Current page", "default": 1 },
+        "totalPages": { "type": "number", "required": false, "description": "Total pages", "default": 1 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "NavigationMenu",
+      "aliases": ["navigation_menu"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Navigation menu with nested dropdown sub-menus",
+      "props": {
+        "items": { "type": "array", "required": false, "description": "Array of {label, href?, icon?, active?, children?}" },
+        "orientation": { "type": "string", "required": false, "description": "Layout", "default": "horizontal", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Menubar",
+      "aliases": ["menubar"],
+      "plugin": "core",
+      "category": "navigation",
+      "description": "Horizontal menu bar with dropdown menus",
+      "props": {
+        "menus": { "type": "array", "required": false, "description": "Array of {label, items: [{label, shortcut?, disabled?, separator?, action?}]}" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Table",
+      "aliases": ["table_component"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Styled HTML table with scroll overflow. Use with TableHeader, TableBody, TableRow, TableHead, TableCell.",
+      "props": {
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Calendar",
+      "aliases": ["calendar"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Interactive month calendar with date selection",
+      "props": {
+        "selected": { "type": "string", "required": false, "description": "Selected date (YYYY-MM-DD)" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Carousel",
+      "aliases": ["carousel"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Image/content carousel with prev/next and dots",
+      "props": {
+        "items": { "type": "array", "required": false, "description": "Array of {src?, alt?, title?, description?}" },
+        "autoPlay": { "type": "boolean", "required": false, "description": "Auto-advance", "default": false },
+        "interval": { "type": "number", "required": false, "description": "Auto-play interval ms", "default": 5000 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Command",
+      "aliases": ["command"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Command palette with search and filterable grouped items",
+      "props": {
+        "placeholder": { "type": "string", "required": false, "description": "Search placeholder", "default": "Type a command or search..." },
+        "items": { "type": "array", "required": false, "description": "Array of {label, value?, icon?, disabled?, group?}" },
+        "emptyMessage": { "type": "string", "required": false, "description": "No results text", "default": "No results found." },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "StatCard",
+      "aliases": ["stat_card"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Dashboard stat card with value, icon, and trend indicator",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Stat label" },
+        "value": { "type": "string|number", "required": false, "description": "Primary stat value" },
+        "icon": { "type": "string", "required": false, "description": "Icon name" },
+        "trend": { "type": "string", "required": false, "description": "Trend description" },
+        "trendValue": { "type": "number", "required": false, "description": "Trend percentage (+ green, - red)" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "StatCard", "label": "Revenue", "value": "$45,231", "trendValue": 20.1, "trend": "+20.1% from last month" }
+    },
+    {
+      "name": "DataTable",
+      "aliases": ["data_table"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Data table with typed columns, datasource fetching, and skeleton loading",
+      "props": {
+        "columns": { "type": "array", "required": false, "description": "Array of {label, key, type?, currency?, badgeMap?, link?}" },
+        "datasource": { "type": "string", "required": false, "description": "Datasource identifier for data fetching" },
+        "data": { "type": "array", "required": false, "description": "Static data rows" },
+        "limit": { "type": "number", "required": false, "description": "Max rows to display" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ActivityFeed",
+      "aliases": ["activity_feed"],
+      "plugin": "core",
+      "category": "data-display",
+      "description": "Activity feed timeline with action icons and timestamps",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of {id?, action, meta?, created_at}" },
+        "limit": { "type": "number", "required": false, "description": "Max items to display" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "BarChart",
+      "aliases": ["bar_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Bar chart with vertical/horizontal layout, stacking, and multi-category support",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of data records keyed by category name", "default": "[]" },
+        "index": { "type": "string", "required": false, "description": "Key for x-axis labels", "default": "name" },
+        "categories": { "type": "array", "required": false, "description": "Category keys to plot as bars" },
+        "colors": { "type": "array", "required": false, "description": "CSS color strings for each category" },
+        "title": { "type": "string", "required": false, "description": "Chart title" },
+        "layout": { "type": "string", "required": false, "description": "Orientation", "default": "vertical", "options": ["vertical", "horizontal"] },
+        "stacked": { "type": "boolean", "required": false, "description": "Stack bars", "default": false },
+        "showLegend": { "type": "boolean", "required": false, "description": "Show legend", "default": true },
+        "showGrid": { "type": "boolean", "required": false, "description": "Show grid", "default": true },
+        "height": { "type": "number", "required": false, "description": "Chart height px", "default": 300 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "BarChart", "data": [{ "name": "Jan", "revenue": 4000 }, { "name": "Feb", "revenue": 3000 }], "categories": ["revenue"], "height": 300 }
+    },
+    {
+      "name": "LineChart",
+      "aliases": ["line_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "SVG line chart with monotone/linear curves, dots, multi-series",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of data records" },
+        "index": { "type": "string", "required": false, "description": "Key for x-axis labels", "default": "name" },
+        "categories": { "type": "array", "required": false, "description": "Category keys to plot" },
+        "colors": { "type": "array", "required": false, "description": "CSS color strings" },
+        "curveType": { "type": "string", "required": false, "description": "Interpolation", "default": "monotone", "options": ["linear", "monotone"] },
+        "showDots": { "type": "boolean", "required": false, "description": "Show data points", "default": true },
+        "height": { "type": "number", "required": false, "description": "Chart height px", "default": 300 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AreaChart",
+      "aliases": ["area_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "SVG area chart with gradient fills and multi-series",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of data records" },
+        "index": { "type": "string", "required": false, "description": "Key for x-axis labels", "default": "name" },
+        "categories": { "type": "array", "required": false, "description": "Category keys to plot" },
+        "gradient": { "type": "boolean", "required": false, "description": "Use gradient fill", "default": true },
+        "height": { "type": "number", "required": false, "description": "Chart height px", "default": 300 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DonutChart",
+      "aliases": ["donut_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Donut/pie chart with center label and interactive segments",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of {name, value, color?}" },
+        "centerLabel": { "type": "string", "required": false, "description": "Center text label" },
+        "centerValue": { "type": "string", "required": false, "description": "Center value text" },
+        "variant": { "type": "string", "required": false, "description": "Chart type", "default": "donut", "options": ["donut", "pie"] },
+        "height": { "type": "number", "required": false, "description": "Chart height px", "default": 250 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "PieChart",
+      "aliases": ["pie_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Alias for DonutChart with variant='pie'",
+      "props": { "_sameAs": "DonutChart" }
+    },
+    {
+      "name": "SparkChart",
+      "aliases": ["spark_chart"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Compact inline sparkline (line/bar/area)",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of numbers" },
+        "type": { "type": "string", "required": false, "description": "Chart type", "default": "line", "options": ["line", "bar", "area"] },
+        "color": { "type": "string", "required": false, "description": "Color", "default": "hsl(var(--primary))" },
+        "height": { "type": "number", "required": false, "description": "Height px", "default": 32 },
+        "width": { "type": "number", "required": false, "description": "Width px", "default": 100 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "SparkChart", "data": [30, 45, 38, 52, 48, 65], "type": "line", "height": 40 }
+    },
+    {
+      "name": "BarList",
+      "aliases": ["bar_list"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Horizontal bar list for ranking data",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of {name, value, color?, href?}" },
+        "title": { "type": "string", "required": false, "description": "List title" },
+        "color": { "type": "string", "required": false, "description": "Default bar color" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "CategoryBar",
+      "aliases": ["category_bar"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Segmented category bar with marker indicator",
+      "props": {
+        "values": { "type": "array", "required": false, "description": "Segment values" },
+        "colors": { "type": "array", "required": false, "description": "Segment colors" },
+        "labels": { "type": "array", "required": false, "description": "Segment labels" },
+        "markerValue": { "type": "number", "required": false, "description": "Marker position" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Tracker",
+      "aliases": ["tracker"],
+      "plugin": "charts",
+      "category": "chart",
+      "description": "Status tracker with colored blocks for uptime visualization",
+      "props": {
+        "data": { "type": "array", "required": false, "description": "Array of {color?, tooltip?}" },
+        "title": { "type": "string", "required": false, "description": "Tracker title" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ChatMessage",
+      "aliases": ["chat_message"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Chat bubble with role-based styling, avatar, and streaming indicator",
+      "props": {
+        "role": { "type": "string", "required": false, "description": "Message role", "default": "user", "options": ["user", "assistant", "system"] },
+        "content": { "type": "string", "required": false, "description": "Message text" },
+        "avatar": { "type": "string", "required": false, "description": "Avatar image URL" },
+        "name": { "type": "string", "required": false, "description": "Sender name" },
+        "timestamp": { "type": "string", "required": false, "description": "Timestamp display" },
+        "isStreaming": { "type": "boolean", "required": false, "description": "Show typing indicator" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "ChatMessage", "role": "assistant", "content": "How can I help you today?" }
+    },
+    {
+      "name": "ChatInput",
+      "aliases": ["chat_input"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Auto-resizing chat input with send button and Enter-to-send",
+      "props": {
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder text", "default": "Type a message..." },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "loading": { "type": "boolean", "required": false, "description": "Show loading spinner" },
+        "maxLength": { "type": "number", "required": false, "description": "Max characters" },
+        "action": { "type": "string", "required": false, "description": "Action identifier on send" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "StreamingText",
+      "aliases": ["streaming_text"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Text streaming animation with cursor",
+      "props": {
+        "text": { "type": "string", "required": false, "description": "Full text to stream" },
+        "speed": { "type": "number", "required": false, "description": "Ms per character", "default": 30 },
+        "cursor": { "type": "boolean", "required": false, "description": "Show blinking cursor", "default": true },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "MarkdownPreview",
+      "aliases": ["markdown_preview"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Lightweight Markdown renderer (headers, bold, italic, code, links, lists, blockquotes)",
+      "props": {
+        "content": { "type": "string", "required": false, "description": "Markdown string" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "CodeBlock",
+      "aliases": ["code_block"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Code block with line numbers, copy button, and language label",
+      "props": {
+        "code": { "type": "string", "required": false, "description": "Code string" },
+        "language": { "type": "string", "required": false, "description": "Language label" },
+        "title": { "type": "string", "required": false, "description": "Header title" },
+        "showLineNumbers": { "type": "boolean", "required": false, "description": "Show line numbers", "default": true },
+        "showCopy": { "type": "boolean", "required": false, "description": "Show copy button", "default": true },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "FeedbackButtons",
+      "aliases": ["feedback_buttons"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Thumbs/stars/emoji feedback for AI responses",
+      "props": {
+        "variant": { "type": "string", "required": false, "description": "Feedback style", "default": "thumbs", "options": ["thumbs", "stars", "emoji"] },
+        "messageId": { "type": "string", "required": false, "description": "Message identifier" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "SourceCitation",
+      "aliases": ["source_citation"],
+      "plugin": "ai",
+      "category": "ai",
+      "description": "Numbered source citations with links and snippets",
+      "props": {
+        "sources": { "type": "array", "required": false, "description": "Array of {title, url?, snippet?, relevance?}" },
+        "title": { "type": "string", "required": false, "description": "Section title", "default": "Sources" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DatePicker",
+      "aliases": ["date_picker"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "Date picker with label and min/max constraints",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder", "default": "Pick a date" },
+        "min": { "type": "string", "required": false, "description": "Min date (YYYY-MM-DD)" },
+        "max": { "type": "string", "required": false, "description": "Max date (YYYY-MM-DD)" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DateRangePicker",
+      "aliases": ["date_range_picker"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "Date range picker with start/end inputs",
+      "props": {
+        "startLabel": { "type": "string", "required": false, "description": "Start date label" },
+        "endLabel": { "type": "string", "required": false, "description": "End date label" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "MultiSelect",
+      "aliases": ["multi_select"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "Multi-select with search, tags, and max item limit",
+      "props": {
+        "options": { "type": "array", "required": false, "description": "Array of {value, label}" },
+        "defaultValue": { "type": "array", "required": false, "description": "Initial selections" },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder", "default": "Select..." },
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "maxItems": { "type": "number", "required": false, "description": "Max selections" },
+        "disabled": { "type": "boolean", "required": false, "description": "Whether disabled" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "FileUpload",
+      "aliases": ["file_upload"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "Drag-and-drop file upload with preview and validation",
+      "props": {
+        "accept": { "type": "string", "required": false, "description": "Accepted types (e.g. 'image/*,.pdf')" },
+        "multiple": { "type": "boolean", "required": false, "description": "Allow multiple files" },
+        "maxSize": { "type": "number", "required": false, "description": "Max size in bytes" },
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "description": { "type": "string", "required": false, "description": "Helper text" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Stepper",
+      "aliases": ["stepper"],
+      "plugin": "advanced",
+      "category": "data-display",
+      "description": "Step progress indicator with horizontal/vertical orientation",
+      "props": {
+        "steps": { "type": "array", "required": false, "description": "Array of {title, description?, icon?}" },
+        "currentStep": { "type": "number", "required": false, "description": "Active step (0-based)", "default": 0 },
+        "orientation": { "type": "string", "required": false, "description": "Layout", "default": "horizontal", "options": ["horizontal", "vertical"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Timeline",
+      "aliases": ["timeline"],
+      "plugin": "advanced",
+      "category": "data-display",
+      "description": "Vertical timeline with colored dots and dates",
+      "props": {
+        "items": { "type": "array", "required": false, "description": "Array of {title, description?, date?, icon?, color?}" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Kanban",
+      "aliases": ["kanban"],
+      "plugin": "advanced",
+      "category": "productivity",
+      "description": "Kanban board with columns, cards, priority colors, and tags",
+      "props": {
+        "columns": { "type": "array", "required": false, "description": "Array of {id, title, color?, cards: [{id, title, description?, assignee?, priority?, tags?}]}" },
+        "title": { "type": "string", "required": false, "description": "Board title" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "VirtualDataGrid",
+      "aliases": ["virtual_data_grid"],
+      "plugin": "advanced",
+      "category": "data-display",
+      "description": "Virtualized data grid for large datasets with sorting and selection",
+      "props": {
+        "columns": { "type": "array", "required": true, "description": "Array of {key, label, width?, sortable?, align?}" },
+        "data": { "type": "array", "required": true, "description": "Row data records" },
+        "rowHeight": { "type": "number", "required": false, "description": "Row height px", "default": 40 },
+        "maxHeight": { "type": "number", "required": false, "description": "Max grid height px", "default": 600 },
+        "sortable": { "type": "boolean", "required": false, "description": "Enable sorting", "default": false },
+        "selectable": { "type": "boolean", "required": false, "description": "Enable row checkboxes", "default": false },
+        "striped": { "type": "boolean", "required": false, "description": "Alternating row colors", "default": false },
+        "emptyMessage": { "type": "string", "required": false, "description": "Empty state text", "default": "No data to display" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "RichTextEditor",
+      "aliases": ["rich_text_editor"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "WYSIWYG editor with toolbar for formatting, headings, lists, links, code",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "placeholder": { "type": "string", "required": false, "description": "Placeholder", "default": "Start typing..." },
+        "defaultValue": { "type": "string", "required": false, "description": "Initial HTML content" },
+        "minHeight": { "type": "number", "required": false, "description": "Min height px", "default": 200 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ColorPicker",
+      "aliases": ["color_picker"],
+      "plugin": "advanced",
+      "category": "form",
+      "description": "Color picker with presets, native input, and alpha slider",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Label text" },
+        "defaultValue": { "type": "string", "required": false, "description": "Initial color", "default": "#3B82F6" },
+        "presets": { "type": "array", "required": false, "description": "Preset hex colors (20 defaults)" },
+        "showAlpha": { "type": "boolean", "required": false, "description": "Show opacity slider", "default": false },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "CommandPalette",
+      "aliases": ["command_palette"],
+      "plugin": "advanced",
+      "category": "productivity",
+      "description": "Cmd+K command palette with search, groups, and keyboard navigation",
+      "props": {
+        "items": { "type": "array", "required": true, "description": "Array of {id, label, description?, icon?, group?, shortcut?, action?}" },
+        "placeholder": { "type": "string", "required": false, "description": "Search placeholder", "default": "Type a command or search..." },
+        "open": { "type": "boolean", "required": false, "description": "Controlled open state" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DiffViewer",
+      "aliases": ["diff_viewer"],
+      "plugin": "advanced",
+      "category": "data-display",
+      "description": "Side-by-side or unified diff viewer with LCS algorithm",
+      "props": {
+        "oldValue": { "type": "string", "required": true, "description": "Original text" },
+        "newValue": { "type": "string", "required": true, "description": "Modified text" },
+        "oldTitle": { "type": "string", "required": false, "description": "Original side title", "default": "Original" },
+        "newTitle": { "type": "string", "required": false, "description": "Modified side title", "default": "Modified" },
+        "mode": { "type": "string", "required": false, "description": "Display mode", "default": "unified", "options": ["unified", "split"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "Marquee",
+      "aliases": ["marquee"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Infinite horizontal scrolling marquee",
+      "props": {
+        "items": { "type": "array", "required": true, "description": "Array of {text?, icon?, image?}" },
+        "speed": { "type": "number", "required": false, "description": "Seconds per cycle", "default": 30 },
+        "direction": { "type": "string", "required": false, "description": "Scroll direction", "default": "left", "options": ["left", "right"] },
+        "pauseOnHover": { "type": "boolean", "required": false, "description": "Pause on hover", "default": false },
+        "gap": { "type": "number", "required": false, "description": "Gap between items px", "default": 24 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "BlurFade",
+      "aliases": ["blur_fade"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Blur+fade+slide entrance animation on scroll",
+      "props": {
+        "delay": { "type": "number", "required": false, "description": "Delay ms", "default": 0 },
+        "duration": { "type": "number", "required": false, "description": "Duration ms", "default": 700 },
+        "direction": { "type": "string", "required": false, "description": "Slide direction", "default": "up", "options": ["up", "down", "left", "right"] },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AnimatedBeam",
+      "aliases": ["animated_beam"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Animated glowing beam line via SVG gradient",
+      "props": {
+        "width": { "type": "number", "required": false, "description": "SVG width", "default": 400 },
+        "height": { "type": "number", "required": false, "description": "SVG height", "default": 40 },
+        "color": { "type": "string", "required": false, "description": "Beam color", "default": "#6366f1" },
+        "duration": { "type": "number", "required": false, "description": "Cycle seconds", "default": 2 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "GradientText",
+      "aliases": ["gradient_text"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Animated shifting gradient text",
+      "props": {
+        "text": { "type": "string", "required": true, "description": "Text content" },
+        "colors": { "type": "array", "required": false, "description": "Gradient color stops" },
+        "speed": { "type": "number", "required": false, "description": "Cycle seconds", "default": 3 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "GradientText", "text": "Build faster with AI", "colors": ["#6366f1", "#ec4899", "#f59e0b"], "props": { "className": "text-5xl font-bold" } }
+    },
+    {
+      "name": "TypingAnimation",
+      "aliases": ["typing_animation"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Typewriter text animation with blinking cursor",
+      "props": {
+        "text": { "type": "string", "required": true, "description": "Text to type out" },
+        "speed": { "type": "number", "required": false, "description": "Ms per character", "default": 50 },
+        "delay": { "type": "number", "required": false, "description": "Delay before start ms", "default": 0 },
+        "cursor": { "type": "boolean", "required": false, "description": "Show cursor", "default": true },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "NumberTicker",
+      "aliases": ["number_ticker"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Animated counting number with easing, triggered on scroll",
+      "props": {
+        "value": { "type": "number", "required": true, "description": "Target number" },
+        "from": { "type": "number", "required": false, "description": "Start number", "default": 0 },
+        "duration": { "type": "number", "required": false, "description": "Animation ms", "default": 2000 },
+        "prefix": { "type": "string", "required": false, "description": "Text before number (e.g. '$')" },
+        "suffix": { "type": "string", "required": false, "description": "Text after number (e.g. '%')" },
+        "decimals": { "type": "number", "required": false, "description": "Decimal places", "default": 0 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      },
+      "example": { "type": "NumberTicker", "value": 45231, "prefix": "$", "duration": 2000 }
+    },
+    {
+      "name": "ParticleField",
+      "aliases": ["particle_field"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "Canvas-based animated particle field with connecting lines",
+      "props": {
+        "count": { "type": "number", "required": false, "description": "Particle count", "default": 50 },
+        "color": { "type": "string", "required": false, "description": "Particle color", "default": "#6366f1" },
+        "speed": { "type": "number", "required": false, "description": "Movement speed", "default": 0.5 },
+        "size": { "type": "number", "required": false, "description": "Particle size px", "default": 2 },
+        "connected": { "type": "boolean", "required": false, "description": "Draw lines between nearby particles", "default": false },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "DockNav",
+      "aliases": ["dock_nav"],
+      "plugin": "magic",
+      "category": "animation",
+      "description": "macOS-style dock with hover magnification",
+      "props": {
+        "items": { "type": "array", "required": true, "description": "Array of {label, icon?, active?, action?}" },
+        "magnification": { "type": "number", "required": false, "description": "Hover scale factor", "default": 1.5 },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AudioRecorder",
+      "aliases": ["audio_recorder"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Audio recorder with waveform, timer, playback, download",
+      "props": {
+        "maxDuration": { "type": "number", "required": false, "description": "Max recording seconds", "default": 300 },
+        "label": { "type": "string", "required": false, "description": "Widget title", "default": "Audio Recorder" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "AudioPlayer",
+      "aliases": ["audio_player"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Audio player with play/pause, seek, volume, cover art",
+      "props": {
+        "src": { "type": "string", "required": true, "description": "Audio source URL" },
+        "title": { "type": "string", "required": false, "description": "Track title" },
+        "artist": { "type": "string", "required": false, "description": "Artist name" },
+        "cover": { "type": "string", "required": false, "description": "Cover art URL" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "VideoPlayer",
+      "aliases": ["video_player"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Video player with custom overlay controls",
+      "props": {
+        "src": { "type": "string", "required": true, "description": "Video source URL" },
+        "poster": { "type": "string", "required": false, "description": "Poster image URL" },
+        "title": { "type": "string", "required": false, "description": "Video title" },
+        "autoPlay": { "type": "boolean", "required": false, "description": "Auto-play", "default": false },
+        "muted": { "type": "boolean", "required": false, "description": "Start muted", "default": false },
+        "maxHeight": { "type": "number", "required": false, "description": "Max height px" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "VideoRecorder",
+      "aliases": ["video_recorder"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Video recorder with camera preview, timer, playback",
+      "props": {
+        "maxDuration": { "type": "number", "required": false, "description": "Max recording seconds", "default": 300 },
+        "facingMode": { "type": "string", "required": false, "description": "Camera facing", "default": "user", "options": ["user", "environment"] },
+        "label": { "type": "string", "required": false, "description": "Widget title", "default": "Video Recorder" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ImageAnnotator",
+      "aliases": ["image_annotator"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Image with drawable annotation rectangles and labels",
+      "props": {
+        "src": { "type": "string", "required": true, "description": "Image source URL" },
+        "annotations": { "type": "array", "required": false, "description": "Array of {x, y, width, height, label, color?} in percentages" },
+        "editable": { "type": "boolean", "required": false, "description": "Allow drawing annotations", "default": false },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    },
+    {
+      "name": "ScreenCapture",
+      "aliases": ["screen_capture"],
+      "plugin": "media",
+      "category": "media",
+      "description": "Screen capture via getDisplayMedia with preview and download",
+      "props": {
+        "label": { "type": "string", "required": false, "description": "Widget title", "default": "Screen Capture" },
+        "className": { "type": "string", "required": false, "description": "Additional CSS classes" }
+      }
+    }
+  ],
+  "templates": [
+    {
+      "name": "saas-dashboard",
+      "label": "SaaS Dashboard",
+      "description": "Analytics dashboard with KPI cards, charts, activity feed, and data table",
+      "category": "dashboard",
+      "plugins": ["charts"],
+      "usage": { "template": "saas-dashboard", "overrides": { "page": { "title": "My Dashboard" } } }
+    },
+    {
+      "name": "analytics-overview",
+      "label": "Analytics Overview",
+      "description": "Full analytics page with SparkCharts, AreaChart, DonutChart, and BarList",
+      "category": "dashboard",
+      "plugins": ["charts"]
+    },
+    {
+      "name": "auth-login-split",
+      "label": "Login (Split Layout)",
+      "description": "Split-screen login page with branding panel and form",
+      "category": "auth",
+      "plugins": []
+    },
+    {
+      "name": "settings-profile",
+      "label": "Settings / Profile",
+      "description": "Tabbed settings page for profile, security, and notifications",
+      "category": "settings",
+      "plugins": []
+    },
+    {
+      "name": "pricing-page",
+      "label": "Pricing Page",
+      "description": "Three-tier pricing comparison with feature lists and CTAs",
+      "category": "marketing",
+      "plugins": []
+    },
+    {
+      "name": "kanban-board",
+      "label": "Kanban Board",
+      "description": "Project management kanban board with columns and priority-colored cards",
+      "category": "productivity",
+      "plugins": ["advanced"]
+    },
+    {
+      "name": "onboarding-wizard",
+      "label": "Onboarding Wizard",
+      "description": "Multi-step onboarding flow with Stepper, forms, and role selector",
+      "category": "onboarding",
+      "plugins": ["advanced"]
+    },
+    {
+      "name": "ai-chat",
+      "label": "AI Chat Interface",
+      "description": "ChatGPT-style interface with messages, citations, and input",
+      "category": "ai",
+      "plugins": ["ai"]
+    },
+    {
+      "name": "crm-contacts",
+      "label": "CRM Contacts",
+      "description": "CRM contacts list with stats, search, and VirtualDataGrid",
+      "category": "crm",
+      "plugins": ["advanced"]
+    },
+    {
+      "name": "email-inbox",
+      "label": "Email Inbox",
+      "description": "Email inbox with folder sidebar and scrollable message list",
+      "category": "productivity",
+      "plugins": []
+    },
+    {
+      "name": "team-management",
+      "label": "Team Management",
+      "description": "Team member grid with avatars, roles, and action menus",
+      "category": "settings",
+      "plugins": []
+    },
+    {
+      "name": "file-manager",
+      "label": "File Manager",
+      "description": "File browser with breadcrumbs, folder/file grid, and upload",
+      "category": "productivity",
+      "plugins": []
+    },
+    {
+      "name": "notifications-center",
+      "label": "Notifications Center",
+      "description": "Tabbed notifications (All, Unread, Mentions, System)",
+      "category": "dashboard",
+      "plugins": []
+    },
+    {
+      "name": "landing-hero",
+      "label": "Landing Page",
+      "description": "Marketing page with hero, marquee, features, stats, testimonials, pricing, footer",
+      "category": "marketing",
+      "plugins": ["magic"]
+    },
+    {
+      "name": "changelog",
+      "label": "Changelog",
+      "description": "Product changelog with Timeline, version badges, and release tags",
+      "category": "marketing",
+      "plugins": ["advanced"]
+    },
+    {
+      "name": "api-docs",
+      "label": "API Documentation",
+      "description": "API docs with endpoint sidebar, code examples, and response schemas",
+      "category": "developer",
+      "plugins": ["ai"]
+    }
+  ],
+  "htmlElements": [
+    "div", "span", "p", "h1", "h2", "h3", "h4", "h5", "h6",
+    "a", "img", "ul", "ol", "li", "section", "header", "footer",
+    "nav", "main", "article", "aside", "blockquote", "pre", "code",
+    "strong", "em", "br", "hr", "figure", "figcaption", "details", "summary"
+  ],
+  "commonProps": {
+    "type": "Component name (PascalCase or snake_case). Required for every node.",
+    "props": "Object of HTML/CSS props passed to the element (e.g. className, style, id).",
+    "children": "Array of child nodes rendered inside this component.",
+    "text": "Shorthand for a single text child.",
+    "action": "Action identifier dispatched on click (for Button, OAuthButton).",
+    "showIf": "Conditional expression — node is only rendered if this evaluates to true."
+  },
+  "tokenInterpolation": {
+    "description": "Server-side token interpolation replaces $ctx.* tokens with runtime values.",
+    "examples": [
+      "$ctx.user.name",
+      "$ctx.user.email",
+      "$ctx.tenant.name",
+      "$ctx.appId"
+    ]
+  }
+}
