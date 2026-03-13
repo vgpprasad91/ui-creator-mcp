@@ -69,10 +69,13 @@ async function run() {
   console.log("\n--- Tools ---");
   const toolsResp = await send("tools/list");
   const tools = toolsResp.result?.tools?.map(t => t.name) ?? [];
-  assert(`Lists 11 tools (got ${tools.length})`, tools.length === 11);
+  assert(`Lists 14 tools (got ${tools.length})`, tools.length === 14);
+  assert("Has create_app", tools.includes("create_app"));
+  assert("Has list_apps", tools.includes("list_apps"));
+  assert("Has switch_app", tools.includes("switch_app"));
+  assert("Has deploy_app", tools.includes("deploy_app"));
   assert("Has get_component_manifest", tools.includes("get_component_manifest"));
   assert("Has publish_page_config", tools.includes("publish_page_config"));
-  assert("Has add_page_route", tools.includes("add_page_route"));
   assert("Has validate_page_config", tools.includes("validate_page_config"));
 
   // 3. List resources
@@ -163,18 +166,15 @@ async function run() {
     });
     assert("Publish to KV succeeds", pubResp.result?.content?.[0]?.text?.includes("Published"));
 
-    const routeResp = await send("tools/call", {
-      name: "add_page_route",
-      arguments: { path: "/e2e-test", file: "pages/e2e-test", public: true },
-    });
-    assert("Route added to manifest", routeResp.result?.content?.[0]?.text?.includes("Route added"));
+    // publish_page_config now auto-adds routes
+    assert("Route auto-added", pubResp.result?.content?.[0]?.text?.includes("Route"));
 
     const statusResp = await send("tools/call", {
       name: "get_app_status", arguments: {},
     });
     const status = JSON.parse(statusResp.result?.content?.[0]?.text ?? "{}");
     assert("Cloudflare connected", status.cloudflareConnected === true);
-    assert("App ID set", !!status.appId);
+    assert("Active app set", !!status.activeApp);
 
     // Verify live page (wait for KV propagation)
     console.log("\n--- Live Verification ---");
