@@ -353,8 +353,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             const manifest = {
                 $schema: "ui-creator-manifest/v1",
                 $version: 1,
-                app: { id: appId, name: appName, description: appDesc || "" },
-                load: { routes: [] },
+                app: appId, // MUST be a string — runtime uses manifest.app as the KV key prefix
+                load: { eager: [], lazy: [], routes: [] },
+                merge_strategy: {},
             };
             await kvPut(`config:${appId}:manifest`, JSON.stringify(manifest));
             // Register in app registry
