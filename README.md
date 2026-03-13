@@ -6,10 +6,12 @@ Chat with Claude to create complete web applications. Describe what you want in 
 
 ## Quick Start
 
-### 1. Install globally
+### 1. Clone and build
 
 ```bash
-npm install -g @anthropic/ui-creator-mcp
+git clone https://github.com/vgpprasad91/ui-creator-mcp.git
+cd ui-creator-mcp
+npm install && npm run build
 ```
 
 ### 2. Get your Cloudflare credentials
@@ -35,7 +37,8 @@ Edit `~/.claude/settings.json`:
 {
   "mcpServers": {
     "ui-creator": {
-      "command": "ui-creator-mcp",
+      "command": "node",
+      "args": ["/path/to/ui-creator-mcp/dist/server.js"],
       "env": {
         "CF_ACCOUNT_ID": "your-cloudflare-account-id",
         "CF_API_TOKEN": "your-cloudflare-api-token",
