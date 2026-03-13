@@ -111,11 +111,79 @@ async function saveAppRegistry(registry: Record<string, { name: string; runtimeU
 
 // ─── Validation ──────────────────────────────────────────────────
 
-function validatePageConfig(pageConfig: unknown): string[] {
+interface ValidationResult {
+  errors: string[];
+  warnings: string[];
+}
+
+// All component types from COMPONENT_MAP in ConfigRenderer.tsx
+const COMPONENT_MAP_TYPES = new Set([
+  // Cards
+  "Card", "card", "CardHeader", "CardTitle", "CardDescription", "CardContent", "CardFooter",
+  // Buttons & Actions
+  "Button", "button", "OAuthButton", "oauth_button",
+  // Display
+  "Badge", "badge", "Separator", "separator", "Avatar", "avatar", "Skeleton", "skeleton", "Icon", "icon",
+  // Forms & Inputs
+  "Form", "form", "Input", "input", "Textarea", "textarea", "Label", "label_component",
+  "Select", "select_component", "Checkbox", "checkbox", "Switch", "switch_component",
+  "RadioGroup", "radio_group", "Slider", "slider",
+  // Layout
+  "Grid", "grid", "ScrollArea", "scroll_area", "AspectRatio", "aspect_ratio",
+  "ResizablePanelGroup", "resizable_panel_group", "ResizablePanel", "resizable_panel",
+  "ResizableHandle", "resizable_handle", "Collapsible", "collapsible",
+  // Overlays & Modals
+  "Dialog", "dialog", "DialogHeader", "DialogFooter", "DialogTitle", "DialogDescription",
+  "Sheet", "sheet", "SheetHeader", "SheetFooter", "SheetTitle", "SheetDescription",
+  "AlertDialog", "alert_dialog", "Drawer", "drawer",
+  "Popover", "popover", "HoverCard", "hover_card", "Tooltip", "tooltip",
+  "DropdownMenu", "dropdown_menu", "ContextMenu", "context_menu",
+  // Feedback
+  "Alert", "alert", "AlertTitle", "AlertDescription", "Progress", "progress", "Toaster", "toaster",
+  // Navigation
+  "Breadcrumb", "breadcrumb", "Pagination", "pagination",
+  "NavigationMenu", "navigation_menu", "Menubar", "menubar",
+  // Data Display
+  "Table", "table_component", "TableHeader", "TableBody", "TableFooter", "TableRow",
+  "TableHead", "TableCell", "TableCaption",
+  "Accordion", "accordion", "Calendar", "calendar", "Carousel", "carousel", "Command", "command",
+  // Tabs
+  "Tabs", "tabs", "ShadcnTabs", "shadcn_tabs", "TabsList", "TabsTrigger", "TabsContent",
+  // Toggle
+  "Toggle", "toggle", "ToggleGroup", "toggle_group",
+  // Dashboard Primitives
+  "PageHeader", "page_header", "StatCard", "stat_card", "DataTable", "data_table",
+  "ActivityFeed", "activity_feed",
+  // Special
+  "Link",
+]);
+
+// Plugin components (loaded dynamically, also valid)
+const PLUGIN_COMPONENTS = new Set([
+  // Charts
+  "BarChart", "LineChart", "AreaChart", "DonutChart", "PieChart", "SparkChart", "BarList", "CategoryBar", "Tracker",
+  // AI
+  "ChatMessage", "ChatInput", "StreamingText", "MarkdownPreview", "CodeBlock", "FeedbackButtons", "SourceCitation",
+  // Advanced
+  "DatePicker", "DateRangePicker", "MultiSelect", "FileUpload", "Stepper", "Timeline",
+  "Kanban", "VirtualDataGrid", "RichTextEditor", "ColorPicker", "CommandPalette", "DiffViewer",
+  // Magic
+  "Marquee", "BlurFade", "AnimatedBeam", "GradientText", "TypingAnimation", "NumberTicker",
+  "ParticleField", "DockNav",
+  // Media
+  "AudioRecorder", "AudioPlayer", "VideoPlayer", "VideoRecorder", "ImageAnnotator", "ScreenCapture",
+]);
+
+function isKnownComponent(type: string): boolean {
+  return COMPONENT_MAP_TYPES.has(type) || PLUGIN_COMPONENTS.has(type) || HTML_ELEMENTS.has(type);
+}
+
+function validatePageConfig(pageConfig: unknown): ValidationResult {
   const errors: string[] = [];
+  const warnings: string[] = [];
   if (!pageConfig || typeof pageConfig !== "object") {
     errors.push("Config must be a JSON object");
-    return errors;
+    return { errors, warnings };
   }
   const c = pageConfig as Record<string, unknown>;
   if (!c.page && !c.template) {
@@ -134,22 +202,140 @@ function validatePageConfig(pageConfig: unknown): string[] {
           if (comp.aliases) comp.aliases.forEach((a: string) => knownComponents.add(a));
         }
       }
-      const checkNodes = (nodes: unknown[]) => {
-        for (const node of nodes) {
+      const checkNodes = (nodes: unknown[], path: string = "body") => {
+        for (let i = 0; i < nodes.length; i++) {
+          const node = nodes[i];
           if (node && typeof node === "object") {
             const n = node as Record<string, unknown>;
-            if (typeof n.type === "string" && !isHtmlElement(n.type) && knownComponents.size > 0 && !knownComponents.has(n.type)) {
-              errors.push(`Unknown component type: "${n.type}".`);
+            const type = (n.type ?? n.component) as string | undefined;
+            const nodePath = `${path}[${i}]`;
+
+            if (typeof type === "string") {
+              // Check if component is known at all
+              if (!isKnownComponent(type) && knownComponents.size > 0 && !knownComponents.has(type)) {
+                warnings.push(`${nodePath}: Unknown component type "${type}" — will render as a generic div.`);
+              }
+
+              const props = (n.props || {}) as Record<string, unknown>;
+
+              // ── Structural prop validation ──
+
+              // Tabs: must have props.tabs as array with value, label, and children (not content)
+              if (type === "Tabs" || type === "tabs") {
+                if (!props.tabs || !Array.isArray(props.tabs)) {
+                  errors.push(`${nodePath}: Tabs MUST have props.tabs as an array.`);
+                } else {
+                  for (let ti = 0; ti < (props.tabs as any[]).length; ti++) {
+                    const tab = (props.tabs as any[])[ti];
+                    if (!tab.value || typeof tab.value !== "string") {
+                      errors.push(`${nodePath}.tabs[${ti}]: Each tab MUST have a "value" string.`);
+                    }
+                    if (!tab.label || typeof tab.label !== "string") {
+                      errors.push(`${nodePath}.tabs[${ti}]: Each tab MUST have a "label" string.`);
+                    }
+                    if (tab.content && !tab.children) {
+                      errors.push(`${nodePath}.tabs[${ti}]: Tab body must be in "children", NOT "content". Rename "content" to "children".`);
+                    }
+                    // Recurse into tab children
+                    if (Array.isArray(tab.children)) {
+                      checkNodes(tab.children, `${nodePath}.tabs[${ti}].children`);
+                    }
+                  }
+                }
+              }
+
+              // Grid: cols should be number or breakpoint object, gap should be number
+              if (type === "Grid" || type === "grid") {
+                if (props.cols !== undefined) {
+                  if (typeof props.cols === "string") {
+                    errors.push(`${nodePath}: Grid props.cols must be a number or breakpoint object {default, sm, md, lg, xl}, NOT a string.`);
+                  }
+                }
+                if (props.gap !== undefined && typeof props.gap !== "number") {
+                  warnings.push(`${nodePath}: Grid props.gap should be a number (e.g., 4). Got ${typeof props.gap}.`);
+                }
+              }
+
+              // StatCard: must have title/label and value
+              if (type === "StatCard" || type === "stat_card") {
+                if (!props.title && !props.label) {
+                  errors.push(`${nodePath}: StatCard MUST have props.title or props.label.`);
+                }
+                if (props.value === undefined && props.value !== 0) {
+                  errors.push(`${nodePath}: StatCard MUST have props.value.`);
+                }
+              }
+
+              // DataTable: must have columns array with key and label
+              if (type === "DataTable" || type === "data_table") {
+                if (!props.columns || !Array.isArray(props.columns)) {
+                  errors.push(`${nodePath}: DataTable MUST have props.columns as an array.`);
+                } else {
+                  for (let ci = 0; ci < (props.columns as any[]).length; ci++) {
+                    const col = (props.columns as any[])[ci];
+                    if (!col.key) {
+                      errors.push(`${nodePath}.columns[${ci}]: Each column MUST have a "key".`);
+                    }
+                    if (!col.label) {
+                      errors.push(`${nodePath}.columns[${ci}]: Each column MUST have a "label".`);
+                    }
+                  }
+                }
+              }
+
+              // Card: title should be in props, not as a child text node
+              if (type === "Card" || type === "card") {
+                if (props.title !== undefined && typeof props.title !== "string") {
+                  warnings.push(`${nodePath}: Card props.title should be a string.`);
+                }
+              }
+
+              // PageHeader: should have props.title as string
+              if (type === "PageHeader" || type === "page_header") {
+                if (!props.title || typeof props.title !== "string") {
+                  warnings.push(`${nodePath}: PageHeader should have props.title as a string.`);
+                }
+              }
+
+              // Badge: should have text or children
+              if (type === "Badge" || type === "badge") {
+                if (!n.text && !n.children && !props.text) {
+                  warnings.push(`${nodePath}: Badge should have "text" or "children" to display content.`);
+                }
+              }
+
+              // Button: should have text or children
+              if (type === "Button" || type === "button") {
+                if (!n.text && !n.children && !props.text) {
+                  warnings.push(`${nodePath}: Button should have "text" or "children" to display content.`);
+                }
+              }
+
+              // Form: should have schema prop
+              if (type === "Form" || type === "form") {
+                if (!props.schema) {
+                  warnings.push(`${nodePath}: Form should have a "schema" prop referencing a form definition.`);
+                }
+              }
+
+              // Icon: must have props.name
+              if (type === "Icon" || type === "icon") {
+                if (!props.name || typeof props.name !== "string") {
+                  errors.push(`${nodePath}: Icon MUST have props.name as a string.`);
+                }
+              }
             }
-            if (Array.isArray(n.children)) checkNodes(n.children);
-            if (Array.isArray(n.body)) checkNodes(n.body);
+
+            // Recurse into children and body
+            if (Array.isArray(n.children)) checkNodes(n.children as unknown[], `${nodePath}.children`);
+            if (Array.isArray(n.body)) checkNodes(n.body as unknown[], `${nodePath}.body`);
           }
         }
       };
       checkNodes(page.body as unknown[]);
     }
   }
-  return errors;
+  return { errors, warnings };
 }
 
 const HTML_ELEMENTS = new Set([
@@ -593,9 +779,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     // ════════════════════════════════════════════════════
 
     case "validate_page_config": {
-      const errors = validatePageConfig((args as any).config);
-      if (errors.length === 0) return { content: [{ type: "text", text: "Config is valid. Ready to publish." }] };
-      return { content: [{ type: "text", text: `Validation errors:\n${errors.map(e => `  - ${e}`).join("\n")}` }] };
+      const { errors, warnings } = validatePageConfig((args as any).config);
+      const parts: string[] = [];
+      if (errors.length > 0) {
+        parts.push(`Errors (must fix before publishing):\n${errors.map(e => `  - ${e}`).join("\n")}`);
+      }
+      if (warnings.length > 0) {
+        parts.push(`Warnings:\n${warnings.map(w => `  - ${w}`).join("\n")}`);
+      }
+      if (errors.length === 0 && warnings.length === 0) {
+        return { content: [{ type: "text", text: "Config is valid. Ready to publish." }] };
+      }
+      if (errors.length === 0) {
+        return { content: [{ type: "text", text: `Config is valid with warnings. Ready to publish.\n\n${parts.join("\n\n")}` }] };
+      }
+      return { content: [{ type: "text", text: parts.join("\n\n") }] };
     }
 
     // ════════════════════════════════════════════════════
@@ -613,9 +811,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     case "publish_page_config": {
       const { pageName, config: pageConfig, path: routePath, public: isPublic } = args as any;
-      const errors = validatePageConfig(pageConfig);
+      const { errors, warnings } = validatePageConfig(pageConfig);
       if (errors.length > 0) {
-        return { content: [{ type: "text", text: `Cannot publish:\n${errors.map(e => `  - ${e}`).join("\n")}` }] };
+        let msg = `Cannot publish — fix these errors first:\n${errors.map(e => `  - ${e}`).join("\n")}`;
+        if (warnings.length > 0) {
+          msg += `\n\nWarnings:\n${warnings.map(w => `  - ${w}`).join("\n")}`;
+        }
+        return { content: [{ type: "text", text: msg }] };
       }
 
       // Publish the page config
@@ -649,11 +851,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         : null;
       const liveUrl = runtimeUrl ? `${runtimeUrl}${inferredPath}` : inferredPath;
 
+      const warningText = warnings.length > 0
+        ? `\n\nWarnings:\n${warnings.map(w => `  - ${w}`).join("\n")}`
+        : "";
+
       return { content: [{ type: "text", text:
         `Published ${pageName} to KV (app: ${config.appId}).\n` +
         (routeAdded ? `Route added: ${inferredPath} → ${pageName} (public)\n` : `Route ${inferredPath} already exists.\n`) +
         `Live at: ${liveUrl}\n` +
-        `Note: KV propagation ~60 seconds.`
+        `Note: KV propagation ~60 seconds.` +
+        warningText
       }] };
     }
 

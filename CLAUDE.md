@@ -91,6 +91,137 @@ publish_navigation(navigation)                   → publishes sidebar menu
 | **Advanced** | Kanban, Calendar, RichTextEditor, FileUpload, Stepper | advanced |
 | **Media** | VideoPlayer, AudioPlayer, ImageGallery, PDFViewer | media |
 
+## Rendering Rules
+
+The runtime's ConfigRenderer maps JSON `type` values to real React components. ONLY use types listed below. Any other type renders as a plain `<div>` with no special behavior.
+
+### Supported Component Types
+
+**Core (COMPONENT_MAP):**
+- **Cards:** Card, card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+- **Buttons:** Button, button, OAuthButton, oauth_button
+- **Display:** Badge, badge, Separator, separator, Avatar, avatar, Skeleton, skeleton, Icon, icon
+- **Forms:** Form, form, Input, input, Textarea, textarea, Label, Select, Checkbox, checkbox, Switch, RadioGroup, radio_group, Slider, slider
+- **Layout:** Grid, grid, ScrollArea, AspectRatio, ResizablePanelGroup, ResizablePanel, ResizableHandle, Collapsible
+- **Overlays:** Dialog, dialog, Sheet, sheet, AlertDialog, Drawer, drawer, Popover, popover, HoverCard, Tooltip, tooltip, DropdownMenu, ContextMenu
+- **Feedback:** Alert, alert, AlertTitle, AlertDescription, Progress, progress, Toaster, toaster
+- **Navigation:** Breadcrumb, Pagination, NavigationMenu, Menubar
+- **Data Display:** Table, Accordion, accordion, Calendar, Carousel, Command
+- **Tabs:** Tabs, tabs, ShadcnTabs, shadcn_tabs, TabsList, TabsTrigger, TabsContent
+- **Toggle:** Toggle, toggle, ToggleGroup, toggle_group
+- **Dashboard:** PageHeader, page_header, StatCard, stat_card, DataTable, data_table, ActivityFeed, activity_feed
+- **Special:** Link
+
+**Plugin components (auto-loaded):**
+- **Charts:** BarChart, LineChart, AreaChart, DonutChart, PieChart, SparkChart, BarList, CategoryBar, Tracker
+- **AI:** ChatMessage, ChatInput, StreamingText, MarkdownPreview, CodeBlock, FeedbackButtons, SourceCitation
+- **Advanced:** DatePicker, DateRangePicker, MultiSelect, FileUpload, Stepper, Timeline, Kanban, VirtualDataGrid, RichTextEditor, ColorPicker, CommandPalette, DiffViewer
+- **Magic:** Marquee, BlurFade, AnimatedBeam, GradientText, TypingAnimation, NumberTicker, ParticleField, DockNav
+- **Media:** AudioRecorder, AudioPlayer, VideoPlayer, VideoRecorder, ImageAnnotator, ScreenCapture
+
+**HTML elements (rendered directly):** div, span, p, h1-h6, a, img, ul, ol, li, blockquote, pre, code, hr, br, main, section, header, footer, nav, form, label, input, textarea, select, option, button, table, thead, tbody, tr, th, td
+
+### Tabs Structure
+
+Tabs is one of the most commonly misconfigured components. Use this exact structure:
+
+```json
+{
+  "type": "Tabs",
+  "props": {
+    "defaultValue": "tab1",
+    "tabs": [
+      { "value": "tab1", "label": "Tab One", "children": [ ... ] },
+      { "value": "tab2", "label": "Tab Two", "children": [ ... ] }
+    ]
+  }
+}
+```
+
+**CRITICAL:** Tab body content goes in `children`, NOT `content`. Using `content` instead of `children` will cause the tab to render empty. Each tab MUST have `value` (string) and `label` (string).
+
+### Grid Structure
+
+`cols` must be a number or a breakpoint object. NEVER use a string.
+
+```json
+{
+  "type": "Grid",
+  "props": {
+    "cols": 4,
+    "gap": 4
+  }
+}
+```
+
+Responsive breakpoints:
+```json
+{ "cols": { "default": 1, "sm": 2, "md": 3, "lg": 4 }, "gap": 6 }
+```
+
+`gap` must be a number (Tailwind spacing scale: 1, 2, 3, 4, 6, 8, etc.).
+
+### StatCard Structure
+
+StatCard MUST have `title` (or `label`) and `value`:
+
+```json
+{
+  "type": "StatCard",
+  "props": {
+    "title": "Total Revenue",
+    "value": "$48,250",
+    "icon": "dollar-sign",
+    "trend": "vs last month",
+    "trendValue": 12.5
+  }
+}
+```
+
+### Card Structure
+
+Card `title` goes in props — the runtime auto-renders it as CardHeader > CardTitle:
+
+```json
+{
+  "type": "Card",
+  "props": { "title": "Recent Activity", "description": "Last 7 days" },
+  "children": [ ... ]
+}
+```
+
+Do NOT put the title as a text child node. The Card component handles title/description rendering automatically.
+
+### Icon Structure
+
+Icon MUST have `props.name` as a string (Lucide icon name):
+
+```json
+{ "type": "Icon", "props": { "name": "users", "className": "h-4 w-4" } }
+```
+
+### DataTable Structure
+
+DataTable MUST have `props.columns` as an array. Each column needs `key` and `label`:
+
+```json
+{
+  "type": "DataTable",
+  "props": {
+    "columns": [
+      { "key": "name", "label": "Name" },
+      { "key": "status", "label": "Status", "type": "badge" },
+      { "key": "amount", "label": "Amount", "type": "currency", "currency": "USD" }
+    ],
+    "datasource": "invoices"
+  }
+}
+```
+
+### Always Validate Before Publishing
+
+ALWAYS call `validate_page_config` before `publish_page_config` and fix ALL errors. The validator checks structural rules that, if violated, cause broken or empty pages at runtime. Warnings are informational but errors are blocking.
+
 ## Templates
 
 Templates are pre-built page configs. Use them as starting points:
