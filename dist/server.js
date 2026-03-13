@@ -173,14 +173,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: [
         {
             name: "get_component_manifest",
-            description: "Get the full component manifest — all available components, their props, plugin assignments, and page templates. " +
-                "ALWAYS call this first before generating any page config so you know what components exist and what props they accept.",
+            description: "Get the component manifest. Without a category, returns a compact index (name, category, plugin for each component). " +
+                "With a category, returns full details including all props. ALWAYS call this first (no category) to see what's available, " +
+                "then call again with a category to get props for the components you need.",
             inputSchema: {
                 type: "object",
                 properties: {
                     category: {
                         type: "string",
-                        description: 'Optional: filter by category (e.g., "layout", "data", "charts", "ai", "magic", "media")',
+                        description: 'Filter by category/plugin to get full props. Options: "layout", "data", "forms", "charts", "ai", "magic", "advanced", "media". Without this, returns compact index of all components.',
+                    },
+                    component: {
+                        type: "string",
+                        description: 'Get full details for a single component by name (e.g., "stat_card", "BarChart", "data_table")',
                     },
                 },
             },
@@ -351,11 +356,46 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
         case "get_component_manifest": {
             const manifest = loadManifest();
-            if (args?.category && Array.isArray(manifest.components)) {
-                const filtered = manifest.components.filter((c) => c.category === args.category || c.plugin === args.category);
+            const components = manifest.components || [];
+            const templates = manifest.templates || [];
+            // Single component lookup — return full details
+            if (args?.component) {
+                const name = args.component;
+                const comp = components.find((c) => c.name === name || (c.aliases && c.aliases.includes(name)));
+                if (comp) {
+                    return { content: [{ type: "text", text: JSON.stringify(comp, null, 2) }] };
+                }
+                return { content: [{ type: "text", text: `Component "${name}" not found. Call get_component_manifest() without arguments to see all available components.` }] };
+            }
+            // Category filter — return full details for that category
+            if (args?.category) {
+                const cat = args.category;
+                const filtered = components.filter((c) => c.category === cat || c.plugin === cat);
                 return { content: [{ type: "text", text: JSON.stringify({ components: filtered, total: filtered.length }, null, 2) }] };
             }
-            return { content: [{ type: "text", text: JSON.stringify(manifest, null, 2) }] };
+            // No filter — return compact index (name + category + plugin only)
+            const index = components.map((c) => ({
+                name: c.name,
+                category: c.category || "core",
+                plugin: c.plugin || "core",
+                ...(c.aliases ? { aliases: c.aliases } : {}),
+            }));
+            // Group by category for readability
+            const grouped = {};
+            for (const c of index) {
+                const key = c.plugin !== "core" ? c.plugin : c.category;
+                if (!grouped[key])
+                    grouped[key] = [];
+                grouped[key].push(c.name);
+            }
+            const summary = {
+                total_components: components.length,
+                total_templates: templates.length,
+                categories: grouped,
+                templates: templates.map((t) => ({ name: t.name, category: t.category })),
+                usage: "Call get_component_manifest with category (e.g., 'charts', 'magic', 'forms') to get full props, or with component (e.g., 'stat_card') for a single component.",
+            };
+            return { content: [{ type: "text", text: JSON.stringify(summary, null, 2) }] };
         }
         case "get_templates": {
             const manifest = loadManifest();

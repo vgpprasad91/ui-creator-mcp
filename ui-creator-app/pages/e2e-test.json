@@ -1,0 +1,13 @@
+{
+  "page": {
+    "title": "E2E Test",
+    "body": [
+      {
+        "type": "stat_card",
+        "props": {
+          "title": "Test"
+        }
+      }
+    ]
+  }
+}

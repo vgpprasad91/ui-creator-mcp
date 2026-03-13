@@ -88,8 +88,8 @@ async function run() {
     name: "get_component_manifest", arguments: {},
   });
   const manifest = JSON.parse(manifestResp.result?.content?.[0]?.text ?? "{}");
-  assert(`99 components (got ${manifest.components?.length})`, manifest.components?.length === 99);
-  assert(`16 templates (got ${manifest.templates?.length})`, manifest.templates?.length === 16);
+  assert(`99 components (got ${manifest.total_components ?? manifest.components?.length})`, (manifest.total_components ?? manifest.components?.length) === 99);
+  assert(`16 templates (got ${manifest.total_templates ?? manifest.templates?.length})`, (manifest.total_templates ?? manifest.templates?.length) === 16);
 
   // 5. Filtered manifest
   const chartsResp = await send("tools/call", {

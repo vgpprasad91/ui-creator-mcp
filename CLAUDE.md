@@ -14,14 +14,17 @@ The runtime is already deployed. You only need to publish JSON configs.
 
 ### Step 1: Read the manifest FIRST
 
-Before generating any config, ALWAYS call `get_component_manifest` to see what components exist and what props they accept. This prevents hallucinating component names or props.
+Before generating any config, ALWAYS call `get_component_manifest` to see what's available. This returns a compact index grouped by category. Then drill into specific categories to get full props.
 
 ```
-get_component_manifest()          → all 99 components
-get_component_manifest("charts")  → chart components only
-get_component_manifest("magic")   → magic/animation components
-get_templates()                   → all 16 page templates
+get_component_manifest()                        → compact index of all 99 components grouped by category
+get_component_manifest(category="charts")        → full props for chart components
+get_component_manifest(category="magic")         → full props for magic/animation components
+get_component_manifest(component="stat_card")    → full props for a single component
+get_templates()                                  → all 16 page templates
 ```
+
+**Important**: The full manifest is ~110K chars — too large for a single response. Always start with the no-arg call to get the index, then query specific categories or components you need.
 
 ### Step 2: Generate page configs
 
