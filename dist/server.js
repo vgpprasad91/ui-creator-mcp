@@ -158,6 +158,7 @@ const JSON_RENDER_SPEC_TYPES = new Set([
     "Toggle", "ToggleGroup", "ButtonGroup", "Pagination",
     // Custom types
     "StatCard", "PageHeader", "DataTable", "ActivityFeed", "Icon",
+    "Navbar", "SideNav", "LineChart", "AIAssistant",
     // Fallback types — render as placeholder cards, not invisible
     "Kanban", "Calendar", "Timeline", "FileUpload", "RichTextEditor",
     "ColorPicker", "DatePicker",

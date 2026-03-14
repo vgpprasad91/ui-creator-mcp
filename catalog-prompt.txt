@@ -46,7 +46,7 @@ For lists where users can add/remove items (todos, carts, etc.), use pushState a
 
 IMPORTANT: State paths use RFC 6901 JSON Pointer syntax (e.g. "/todos/0/title"). Do NOT use JavaScript-style dot notation (e.g. "/todos.length" is WRONG). To generate unique IDs for new items, use "$id" instead of trying to read array length.
 
-AVAILABLE COMPONENTS (40):
+AVAILABLE COMPONENTS (45):
 
 - Card: { title?: string, description?: string, maxWidth?: "sm" | "md" | "lg" | "full", centered?: boolean } - Container card for content sections. Use for forms/content boxes, NOT for page headers. [accepts children]
 - Stack: { direction?: "horizontal" | "vertical", gap?: "none" | "sm" | "md" | "lg", align?: "start" | "center" | "end" | "stretch", justify?: "start" | "center" | "end" | "between" | "around" } - Flex container for layouts [accepts children]
@@ -84,10 +84,15 @@ AVAILABLE COMPONENTS (40):
 - ToggleGroup: { items: Array<{ label: string, value: string }>, type?: "single" | "multiple", value?: string } - Group of toggle buttons. Type 'single' (default) or 'multiple'. Use { $bindState } on value. [events: change]
 - ButtonGroup: { buttons: Array<{ label: string, value: string }>, selected?: string } - Segmented button group. Use { $bindState } on selected for selected value. [events: change]
 - Pagination: { totalPages: number, page?: number } - Page navigation. Use { $bindState } on page for current page number. [events: change]
-- StatCard: { title?: string, value: string | number, description?: string, trend?: string, trendValue?: number } - Stat card with title, value, and optional trend indicator. Shows a metric prominently.
-- PageHeader: { title: string, description?: string } - Page header with large title and subtitle description.
-- DataTable: { columns: Array<{ key: string, label: string, type?: "text" | "currency" | "date" | "badge" }>, data?: Array<unknown> } - Data table with sortable columns. Use state + repeat for dynamic data.
-- Icon: { name: string, size?: "sm" | "md" | "lg" } - Lucide icon by name (e.g., "users", "dollar-sign", "star").
+- StatCard: { title?: string, label?: string, value: string | number, description?: string, icon?: string, trend?: string, trendValue?: number } - Stat card showing a metric with title, value, and optional trend indicator
+- PageHeader: { title: string, description?: string } - Page header with title and optional description
+- DataTable: { columns: Array<{ key: string, label: string, type?: "text" | "currency" | "date" | "badge" | "link", currency?: string }>, datasource?: string, data?: Array<unknown>, limit?: number } - Data table with sortable columns and formatted cells
+- ActivityFeed: { data?: Array<unknown>, limit?: number } - Activity feed showing recent events
+- Icon: { name: string } - Lucide icon by name
+- Navbar: { logo?: string, company?: string, avatar?: string, search?: boolean, notifications?: boolean, signOut?: boolean } - Top navigation bar with logo, company dropdown, search, notifications, user avatar
+- SideNav: { logo?: string, items: Array<{ label: string, href?: string, icon?: string, active?: boolean, count?: number, type?: string, children?: Array<{ label: string, href?: string, count?: number }> }> } - Sidebar navigation with icons, nested sub-items with count badges
+- LineChart: { title?: string, height?: number, xLabels?: Array<string>, yLabels?: Array<string>, lines?: Array<{ label: string, color?: string }>, toggles?: Array<string> } - Line chart with SVG lines, axis labels, toggles, and legend
+- AIAssistant: { message: string, actions?: Array<string | { label: string }> } - AI assistant card with suggestion message and action buttons
 
 AVAILABLE ACTIONS:
 
@@ -95,11 +100,10 @@ AVAILABLE ACTIONS:
 - pushState: Append an item to an array in state. Params: { statePath: string, value: any, clearStatePath?: string }. Value can contain {"$state":"/path"} refs and "$id" for auto IDs. [built-in]
 - removeState: Remove an item from an array in state by index. Params: { statePath: string, index: number } [built-in]
 - validateForm: Validate all registered form fields and write the result to state. Params: { statePath?: string }. Defaults to /formValidation. Result: { valid: boolean, errors: Record<string, string[]> }. [built-in]
-- navigate: Navigate to a URL path
-- submit: Submit form data
-- setState: Update state value
-- pushState: Add item to array in state
-- removeState: Remove item from array by index
+- navigate: Navigate to URL
+- setState: Update state
+- pushState: Add to state array
+- removeState: Remove from state array
 
 EVENTS (the `on` field):
 Elements can have an optional `on` field to bind events to actions. The `on` field is a top-level field on the element (sibling of type/props/children), NOT inside props.
