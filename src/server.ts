@@ -195,7 +195,42 @@ const JSON_RENDER_SPEC_TYPES = new Set([
   "Toggle", "ToggleGroup", "ButtonGroup", "Pagination",
   // Custom types
   "StatCard", "PageHeader", "DataTable", "ActivityFeed", "Icon",
+  // Fallback types — render as placeholder cards, not invisible
+  "Kanban", "Calendar", "Timeline", "FileUpload", "RichTextEditor",
+  "ColorPicker", "DatePicker",
 ]);
+
+// Suggestions for common unknown types → closest catalog equivalent
+const TYPE_SUGGESTIONS: Record<string, string> = {
+  "List": "Stack (with children)",
+  "Section": "Card",
+  "Container": "Stack or Card",
+  "Box": "Stack or Card",
+  "Flex": "Stack (direction: horizontal/vertical)",
+  "Row": "Stack (direction: horizontal)",
+  "Column": "Stack (direction: vertical)",
+  "Header": "PageHeader or Heading",
+  "Footer": "Stack with Text",
+  "Sidebar": "Stack inside Grid",
+  "Nav": "Stack with Link children",
+  "Form": "Stack with Input/Select/Checkbox children",
+  "Chart": "Card with Text (charts require plugin)",
+  "BarChart": "Card (charts require plugin)",
+  "LineChart": "Card (charts require plugin)",
+  "PieChart": "Card (charts require plugin)",
+  "Divider": "Separator",
+  "Hr": "Separator",
+  "Label": "Text",
+  "Paragraph": "Text",
+  "H1": "Heading (level: 1)",
+  "H2": "Heading (level: 2)",
+  "H3": "Heading (level: 3)",
+  "Img": "Image",
+  "Tag": "Badge",
+  "Chip": "Badge",
+  "Modal": "Dialog",
+  "Sheet": "Drawer",
+};
 
 function validateNativeSpec(spec: any): ValidationResult {
   const errors: string[] = [];
@@ -235,7 +270,9 @@ function validateNativeSpec(spec: any): ValidationResult {
     if (typeof elem.type !== "string") {
       errors.push(`${path}: "type" must be a string`);
     } else if (!JSON_RENDER_SPEC_TYPES.has(elem.type)) {
-      warnings.push(`${path}: Unknown type "${elem.type}" — may not render correctly`);
+      const suggestion = TYPE_SUGGESTIONS[elem.type];
+      const hint = suggestion ? ` Try: ${suggestion}` : ` Available types: Card, Stack, Grid, Heading, Text, Badge, Button, Tabs, Table, StatCard, DataTable, PageHeader, etc.`;
+      errors.push(`${path}: Unknown component type "${elem.type}" — not in the catalog and will not render.${hint}`);
     }
 
     // props must be an object
