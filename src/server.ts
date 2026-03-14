@@ -451,6 +451,9 @@ function isHtmlElement(type: string): boolean { return HTML_ELEMENTS.has(type); 
 // ─── Wrangler Deploy Helper ──────────────────────────────────────
 
 function generateWranglerToml(appId: string): string {
+  // Full wrangler config with ALL bindings the runtime requires.
+  // Uses shared infrastructure — all apps share the same D1, R2, KV, DO, Queues.
+  // Only name and APP_ID differ per app.
   return `name = "${appId}"
 main = "src/index.ts"
 compatibility_date = "2024-12-01"
@@ -463,20 +466,112 @@ directory = "./public"
 APP_ID = "${appId}"
 APP_ENV = "production"
 
+# ─── KV Namespaces (shared) ───
 [[kv_namespaces]]
 binding = "CF_KV_SESSIONS"
-id = "${config.kvNamespaceId}"
+id = "f06f2c34dfa3483c9ac12f5b60def097"
 
 [[kv_namespaces]]
 binding = "CF_KV_CONFIG"
-id = "${config.kvNamespaceId}"
+id = "687f7f470c7349578fbde50079ec3196"
 
 [[kv_namespaces]]
 binding = "CF_KV_CACHE"
-id = "${config.kvNamespaceId}"
+id = "c3604887d443439fa201227848c356b8"
 
+[[kv_namespaces]]
+binding = "CF_KV_CLIENTFORCE_CONFIG"
+id = "afd09645d27643279f4cc88a6a82af58"
+
+[[kv_namespaces]]
+binding = "CF_KV_SHARED_CONFIG"
+id = "88ea4e1fbe304e29a359bfd29b5ca618"
+
+# ─── D1 Databases (shared) ───
+[[d1_databases]]
+binding = "CF_D1_PRIMARY"
+database_name = "d1-primary"
+database_id = "95276a82-fb36-4ea1-adf2-233e6930f950"
+
+[[d1_databases]]
+binding = "CF_D1_CLIENTFORCE"
+database_name = "cf-d1-clientforce"
+database_id = "c95fee25-eaa7-4e5f-a9fe-685fe60512b6"
+
+[[d1_databases]]
+binding = "CF_D1_SHARED_POOL"
+database_name = "cf-d1-shared-pool"
+database_id = "841fc7e5-bf49-4240-a2d4-3de109a80765"
+
+# ─── R2 Buckets (shared) ───
+[[r2_buckets]]
+binding = "CF_R2_UPLOADS"
+bucket_name = "r2-uploads"
+
+[[r2_buckets]]
+binding = "CF_R2_EXPORTS"
+bucket_name = "r2-exports"
+
+[[r2_buckets]]
+binding = "CF_R2_CLIENTFORCE_UPLOADS"
+bucket_name = "cf-r2-clientforce-uploads"
+
+[[r2_buckets]]
+binding = "CF_R2_SHARED_UPLOADS"
+bucket_name = "cf-r2-shared-uploads"
+
+# ─── Durable Objects ───
+[durable_objects]
+bindings = [
+  { name = "CF_DO_PRESENCE", class_name = "PresenceDO" },
+  { name = "CF_DO_RATELIMIT", class_name = "RateLimitDO" },
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["PresenceDO", "RateLimitDO"]
+
+# ─── Queues (producers only) ───
+[[queues.producers]]
+binding = "CF_QUEUE_NOTIFICATIONS"
+queue = "queue-notifications"
+
+[[queues.producers]]
+binding = "CF_QUEUE_CLIENTFORCE_NOTIFICATIONS"
+queue = "cf-queue-clientforce-notifications"
+
+[[queues.producers]]
+binding = "CF_QUEUE_SHARED_NOTIFICATIONS"
+queue = "cf-queue-shared-notifications"
+
+# ─── AI ───
 [ai]
 binding = "AI"
+
+# ─── Analytics Engine ───
+[[analytics_engine_datasets]]
+binding = "CF_ANALYTICS_ENGINE"
+
+# ─── Workflows ───
+[[workflows]]
+binding = "CF_WORKFLOW_INVOICE"
+name = "invoice"
+class_name = "InvoiceLifecycleWorkflow"
+
+[[workflows]]
+binding = "CF_WORKFLOW_ONBOARDING"
+name = "onboarding"
+class_name = "ClientOnboardingWorkflow"
+
+[[workflows]]
+binding = "CF_WORKFLOW_INVITE"
+name = "invite"
+class_name = "TeamInviteWorkflow"
+
+[[workflows]]
+binding = "CF_WORKFLOW_ERASURE"
+name = "erasure"
+class_name = "DataErasureWorkflow"
 `;
 }
 
