@@ -178,6 +178,83 @@ function isKnownComponent(type: string): boolean {
   return COMPONENT_MAP_TYPES.has(type) || PLUGIN_COMPONENTS.has(type) || HTML_ELEMENTS.has(type);
 }
 
+// json-render native spec types — these are the component types supported by the Renderer
+const JSON_RENDER_SPEC_TYPES = new Set([
+  // shadcn 36 core types
+  "Card", "Stack", "Grid", "Separator", "Tabs", "Accordion", "Collapsible",
+  "Dialog", "Drawer", "Carousel", "Table", "Heading", "Text", "Image",
+  "Avatar", "Badge", "Alert", "Progress", "Skeleton", "Spinner",
+  "Tooltip", "Popover", "Input", "Textarea", "Select", "Checkbox",
+  "Radio", "Switch", "Slider", "Button", "Link", "DropdownMenu",
+  "Toggle", "ToggleGroup", "ButtonGroup", "Pagination",
+  // Custom types
+  "StatCard", "PageHeader", "DataTable", "ActivityFeed", "Icon",
+]);
+
+function validateNativeSpec(spec: any): ValidationResult {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!spec || typeof spec !== "object") {
+    errors.push("spec must be an object");
+    return { errors, warnings };
+  }
+
+  if (typeof spec.root !== "string") {
+    errors.push('spec.root must be a string (the ID of the root element)');
+    return { errors, warnings };
+  }
+
+  if (!spec.elements || typeof spec.elements !== "object") {
+    errors.push('spec.elements must be an object mapping element IDs to definitions');
+    return { errors, warnings };
+  }
+
+  // Check root exists in elements
+  if (!spec.elements[spec.root]) {
+    errors.push(`spec.root "${spec.root}" does not exist in spec.elements`);
+  }
+
+  // Validate each element
+  for (const [id, el] of Object.entries(spec.elements)) {
+    const elem = el as any;
+    const path = `elements.${id}`;
+
+    if (!elem || typeof elem !== "object") {
+      errors.push(`${path}: element must be an object`);
+      continue;
+    }
+
+    // type is required and must be a string
+    if (typeof elem.type !== "string") {
+      errors.push(`${path}: "type" must be a string`);
+    } else if (!JSON_RENDER_SPEC_TYPES.has(elem.type)) {
+      warnings.push(`${path}: Unknown type "${elem.type}" — may not render correctly`);
+    }
+
+    // props must be an object
+    if (elem.props !== undefined && (typeof elem.props !== "object" || Array.isArray(elem.props))) {
+      errors.push(`${path}: "props" must be an object`);
+    }
+
+    // children must be an array of strings
+    if (!Array.isArray(elem.children)) {
+      errors.push(`${path}: "children" must be an array of element ID strings`);
+    } else {
+      for (let ci = 0; ci < elem.children.length; ci++) {
+        const childId = elem.children[ci];
+        if (typeof childId !== "string") {
+          errors.push(`${path}.children[${ci}]: child must be a string ID, got ${typeof childId}`);
+        } else if (!spec.elements[childId]) {
+          errors.push(`${path}.children[${ci}]: child ID "${childId}" does not exist in spec.elements`);
+        }
+      }
+    }
+  }
+
+  return { errors, warnings };
+}
+
 function validatePageConfig(pageConfig: unknown): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -192,7 +269,17 @@ function validatePageConfig(pageConfig: unknown): ValidationResult {
   if (c.page && typeof c.page === "object") {
     const page = c.page as Record<string, unknown>;
     if (!page.title) errors.push("page.title is required");
-    if (!page.body && !page.aside) errors.push("page.body or page.aside is required");
+
+    // ── Native json-render spec format ──
+    if (page.spec && typeof page.spec === "object") {
+      const specResult = validateNativeSpec(page.spec);
+      errors.push(...specResult.errors);
+      warnings.push(...specResult.warnings);
+      return { errors, warnings };
+    }
+
+    // ── Legacy tree format ──
+    if (!page.body && !page.aside) errors.push("page.body or page.aside is required (or use page.spec for native json-render format)");
     if (Array.isArray(page.body)) {
       const manifest = loadManifest();
       const knownComponents = new Set<string>();

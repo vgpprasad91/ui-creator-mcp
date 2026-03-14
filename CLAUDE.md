@@ -26,43 +26,103 @@ get_templates()                                  → all 16 page templates
 
 **Important**: The full manifest is ~110K chars — too large for a single response. Always start with the no-arg call to get the index, then query specific categories or components you need.
 
-### Step 2: Generate page configs
+### Step 2: Generate page configs (json-render native spec format)
 
-Page configs are JSON objects with this structure:
+Page configs use json-render's **flat spec format**. This is a flat map of elements with string ID references — NOT a nested tree. The Renderer consumes this directly with zero conversion.
 
 ```json
 {
   "page": {
     "title": "Dashboard",
-    "layout": "sidebar",
-    "body": [
-      {
-        "type": "grid",
-        "props": { "columns": 4, "gap": 4 },
-        "children": [
-          {
-            "type": "stat_card",
-            "props": {
-              "title": "Total Revenue",
-              "value": "$48,250",
-              "change": "+12.5%",
-              "trend": "up"
-            }
-          }
-        ]
+    "layout": "full",
+    "spec": {
+      "root": "main-stack",
+      "elements": {
+        "main-stack": {
+          "type": "Stack",
+          "props": { "direction": "column", "gap": "lg" },
+          "children": ["header-1", "stats-grid", "content-card"]
+        },
+        "header-1": {
+          "type": "Heading",
+          "props": { "level": 1, "text": "Dashboard" },
+          "children": []
+        },
+        "stats-grid": {
+          "type": "Grid",
+          "props": { "columns": 4, "gap": "md" },
+          "children": ["stat-1", "stat-2", "stat-3", "stat-4"]
+        },
+        "stat-1": {
+          "type": "Card",
+          "props": { "title": "Revenue", "description": "$48,250" },
+          "children": []
+        },
+        "stat-2": {
+          "type": "Card",
+          "props": { "title": "Users", "description": "2,847" },
+          "children": []
+        },
+        "stat-3": {
+          "type": "Card",
+          "props": { "title": "Completion", "description": "73%" },
+          "children": []
+        },
+        "stat-4": {
+          "type": "Card",
+          "props": { "title": "Rating", "description": "4.8/5" },
+          "children": []
+        },
+        "content-card": {
+          "type": "Card",
+          "props": { "title": "Recent Activity" },
+          "children": ["activity-text"]
+        },
+        "activity-text": {
+          "type": "Text",
+          "props": { "text": "No recent activity" },
+          "children": []
+        }
       }
-    ]
+    }
   }
 }
 ```
 
-Key rules:
-- Every node has `type` (component name from manifest) and `props` (component props)
-- Use `children` for nested components
-- Use `text` for plain text content
-- Reference datasources with `"datasource": "my_datasource_name"`
-- Reference context variables with `$ctx.user.name`, `$ctx.workspace.id`
-- Use template references with `"template": "saas-dashboard"` + optional `"overrides"` for deep-merge
+**Key rules for the spec format:**
+- Every element MUST have a **unique string ID** as its key in `elements`
+- `children` is an array of **string IDs** (NOT inline objects)
+- `props` contains all the component's properties
+- `root` is the ID of the top-level element — it MUST exist in `elements`
+- Every child ID referenced in `children` MUST exist in `elements`
+- Leaf elements MUST have `"children": []` (empty array, not omitted)
+
+**Available component types (41 total):**
+
+*shadcn/json-render (36):* Card, Stack, Grid, Separator, Tabs, Accordion, Collapsible, Dialog, Drawer, Carousel, Table, Heading, Text, Image, Avatar, Badge, Alert, Progress, Skeleton, Spinner, Tooltip, Popover, Input, Textarea, Select, Checkbox, Radio, Switch, Slider, Button, Link, DropdownMenu, Toggle, ToggleGroup, ButtonGroup, Pagination
+
+*Custom (5):* StatCard, PageHeader, DataTable, ActivityFeed, Icon
+
+**Layout patterns:**
+- Use `Stack` for vertical/horizontal layouts: `{ "direction": "column", "gap": "lg" }` or `{ "direction": "row", "gap": "md" }`
+- Use `Grid` for multi-column layouts: `{ "columns": 4, "gap": "md" }`
+- Gap values: `"xs"`, `"sm"`, `"md"`, `"lg"`, `"xl"`
+- Stack alignment: `"align": "center"`, `"justify": "space-between"`
+
+**Tabs pattern:**
+```json
+"my-tabs": {
+  "type": "Tabs",
+  "props": { "tabs": [{ "value": "t1", "label": "Tab 1" }, { "value": "t2", "label": "Tab 2" }] },
+  "children": ["panel-1", "panel-2"]
+}
+```
+Each child corresponds to a tab panel in order.
+
+**Legacy tree format** (still supported as fallback):
+- Uses `body` array with nested `{ type, props, children }` objects
+- Rendered via ConfigRenderer, not json-render
+- New pages should always use the `spec` format
 
 ### Step 3: Validate before publishing
 
@@ -93,7 +153,9 @@ publish_navigation(navigation)                   → publishes sidebar menu
 
 ## Rendering Rules
 
-The runtime's ConfigRenderer maps JSON `type` values to real React components. ONLY use types listed below. Any other type renders as a plain `<div>` with no special behavior.
+**PREFERRED: Use the json-render native spec format** (with `page.spec`). The json-render `Renderer` handles these directly — no conversion, no data loss.
+
+**LEGACY: The tree format** (with `page.body`) uses ConfigRenderer which maps JSON `type` values to React components. ONLY use types listed below. Any other type renders as a plain `<div>` with no special behavior.
 
 ### Supported Component Types
 
